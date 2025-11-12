@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="../img/imagem7logo.png" type="image/png">
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; font-family:"Poppins",sans-serif; }
+    body { background:#f3f4f6; color:#222; }
+    .container { display:flex; justify-content:center; align-items:center; min-height:100vh; padding:30px; }
+    .card { display:flex; width:920px; border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.12); background:#fff; }
+    .left { flex:1; background:#0d6efd; color:#fff; padding:40px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-width:280px; }
+    .left h1 { font-size:30px; margin-bottom:10px; }
+    .left p { font-size:15px; line-height:1.5; }
+    .right { flex:1; padding:36px 44px; background:#fff; min-width:320px; }
+    .right h2 { text-align:center; color:#333; margin-bottom:22px; font-size:22px; }
+    .field { display:flex; flex-direction:column; margin-bottom:14px; }
+    label { font-weight:600; margin-bottom:6px; font-size:13px; color:#333; }
+    input { padding:10px 12px; border:1px solid #ccc; border-radius:8px; font-size:15px; transition:0.2s; }
+    input:focus { outline:none; border-color:#0d6efd; box-shadow:0 0 6px rgba(13,110,253,0.14); }
+    .btn { display:block; margin:20px auto 0 auto; background:#0d6efd; color:#fff; border:none; padding:12px 36px; border-radius:8px; font-size:16px; cursor:pointer; transition:0.3s; }
+    .btn:hover { background:#0b5ed7; }
+    .link { text-align:center; margin-top:12px; font-size:14px; }
+    .link a { color:#0d6efd; text-decoration:none; }
+    .link a:hover { text-decoration:underline; }
+    .success { display:none; position:fixed; inset:0; background:#0d6efd; color:#fff; justify-content:center; align-items:center; flex-direction:column; text-align:center; z-index:50; padding:20px; }
+    .success h1 { font-size:28px; margin-bottom:14px; }
+    .success button { background:#fff; color:#0d6efd; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
+    @media (max-width:880px) { .card { flex-direction:column; width:95%; } }
+    .btn-voltar {
+  display: inline-block;
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.btn-voltar:hover {
+  background-color: #0056b3;
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="container" id="login-screen">
+    <div class="card">
+      <div class="left">
+        <h1>Bem-vindo(a)</h1>
+        <p>Entre com seu e-mail e senha, ou recupere se esqueceu.</p>
+      </div>
+      <div class="right">
+        <h2>Login</h2>
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="loginEmail">E-mail</label>
+            <input id="loginEmail" type="email" name="loginEmail" placeholder="exemplo@gmail.com"
+                   required pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                   title="Digite um e-mail válido.">
+          </div>
+          <div class="field">
+            <label for="loginSenha">Senha</label>
+            <input id="loginSenha" type="password" name="loginSenha" placeholder="Sua senha"
+                   required>
+          </div>
+          <button type="submit" class="btn">Entrar</button>
+        </form>
+        <div class="link"><a href="#" id="forgotLink">Esqueci minha senha</a></div>
+        <div><button class="btn-voltar" onclick="history.back()">Voltar</button></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="recover-screen" style="display:none;">
+    <div class="card">
+      <div class="left">
+        <h1>Recuperar Senha</h1>
+        <p>Digite seu e-mail cadastrado e enviaremos instruções.</p>
+      </div>
+      <div class="right">
+        <h2>Recuperar Senha</h2>
+        <form id="recoverForm" novalidate>
+          <div class="field">
+            <label for="recoverEmail">E-mail</label>
+            <input id="recoverEmail" type="email" name="recoverEmail" placeholder="exemplo@gmail.com"
+                   required pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                   title="Digite um e-mail válido.">
+          </div>
+          <button type="submit" class="btn">Enviar Recuperação</button>
+        </form>
+        <div class="link"><a href="#" id="backToLogin">Voltar ao login</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="success" id="successScreen">
+    <h1>Ação realizada com sucesso!</h1>
+    <p id="successMessage"></p>
+    <button onclick="closeSuccess()">OK</button>
+  </div>
+
+  <script>
+    // Elementos
+    const loginScreen = document.getElementById('login-screen');
+    const recoverScreen = document.getElementById('recover-screen');
+    const loginForm = document.getElementById('loginForm');
+    const recoverForm = document.getElementById('recoverForm');
+    const forgotLink = document.getElementById('forgotLink');
+    const backToLogin = document.getElementById('backToLogin');
+    const successScreen = document.getElementById('successScreen');
+    const successMessage = document.getElementById('successMessage');
+
+    // Simulação de usuário cadastrado (apenas para demonstração)
+    const user = {
+      email: 'usuario@exemplo.com',
+      senha: 'senha123'
+    };
+
+    // Navegação
+    forgotLink.addEventListener('click', e => {
+      e.preventDefault();
+      loginScreen.style.display = 'none';
+      recoverScreen.style.display = 'flex';
+    });
+    backToLogin.addEventListener('click', e => {
+      e.preventDefault();
+      recoverScreen.style.display = 'none';
+      loginScreen.style.display = 'flex';
+    });
+
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!loginForm.checkValidity()) {
+        loginForm.reportValidity();
+        return;
+      }
+      const em = loginForm.loginEmail.value.trim();
+      const pw = loginForm.loginSenha.value;
+      if (em === user.email && pw === user.senha) {
+        successMessage.textContent = 'Login efetuado com sucesso!';
+        successScreen.style.display = 'flex';
+      } else {
+        alert('E-mail ou senha incorretos.');
+      }
+    });
+
+    recoverForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!recoverForm.checkValidity()) {
+        recoverForm.reportValidity();
+        return;
+      }
+      const em = recoverForm.recoverEmail.value.trim();
+      if (em === user.email) {
+        successMessage.textContent = 'Um e-mail de recuperação foi enviado para ' + em;
+      } else {
+        // por segurança, não indicar se existe ou não
+        successMessage.textContent = 'Se esse e-mail estiver cadastrado, você receberá instruções de recuperação.';
+      }
+      successScreen.style.display = 'flex';
+    });
+
+    function closeSuccess() {
+      successScreen.style.display = 'none';
+      // voltar ao login
+      recoverScreen.style.display = 'none';
+      loginScreen.style.display = 'flex';
+    }
+  </script>
+
+</body>
+</html>
